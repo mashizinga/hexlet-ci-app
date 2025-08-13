@@ -1,28 +1,29 @@
-name: CI Pipeline
-on: push
+name: Node CI
+
+on:
+  - push
+  - pull_request
+
+env:
+  CI: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest 
-    
+
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node-version: [18.x, 20.x]  
-    
+        node-version: [18.x]
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Install dependencies (make setup)
-      run: make setup
-
-    - name: Run tests (make test)
-      run: make test
-
-    - name: Run linter (make lint)
-      run: make lint
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: make install
+      - run: make lint
+      - run: make test
+      - uses: hexlet-components/hello-from-hexlet-action@release
